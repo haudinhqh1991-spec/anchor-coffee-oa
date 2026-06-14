@@ -122,9 +122,8 @@ export function seed() {
     ].forEach((r) => ins.run(...r));
     console.log('Seeded stores');
   }
-}
 
-  // Seed barista accounts (chi seed 1 lan, admin co the them sau qua admin panel)
+  // Seed barista accounts
   const countBarista = db.prepare('SELECT COUNT(*) c FROM barista_accounts').get().c;
   if (countBarista === 0) {
     const ins = db.prepare(
