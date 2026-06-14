@@ -79,6 +79,17 @@ CREATE TABLE IF NOT EXISTS oa_token (
   refresh_token TEXT,
   expires_at INTEGER
 );
+
+-- Tai khoan barista - phan quyen theo chi nhanh
+CREATE TABLE IF NOT EXISTS barista_accounts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  store_id INTEGER NOT NULL,
+  api_key TEXT UNIQUE NOT NULL,
+  active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT (datetime('now','localtime')),
+  FOREIGN KEY(store_id) REFERENCES stores(id)
+);
 `);
 
 // ---------- Seed du lieu mau ----------
@@ -110,6 +121,21 @@ export function seed() {
       ['Anchor Coffee - Phạm Văn Đồng', '256 Phạm Văn Đồng, Thủ Đức', 'Tuyến Thủ Đức', '06:00', '21:30'],
     ].forEach((r) => ins.run(...r));
     console.log('Seeded stores');
+  }
+}
+
+  // Seed barista accounts (chi seed 1 lan, admin co the them sau qua admin panel)
+  const countBarista = db.prepare('SELECT COUNT(*) c FROM barista_accounts').get().c;
+  if (countBarista === 0) {
+    const ins = db.prepare(
+      'INSERT INTO barista_accounts (name, store_id, api_key) VALUES (?,?,?)'
+    );
+    [
+      ['Barista Nguyễn Huệ', 1, 'barista-nhu-001'],
+      ['Barista Võ Thị Sáu', 2, 'barista-vts-001'],
+      ['Barista Phạm Văn Đồng', 3, 'barista-pvd-001'],
+    ].forEach((r) => ins.run(...r));
+    console.log('Seeded barista_accounts');
   }
 }
 

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Barista Queue — Anchor Coffee</title>
+<style>
+:root{--bg:#0a0c12;--surf:#141720;--card:#1c2030;--brd:#252a3d;--acc:#4f8ef7;--grn:#22c55e;--red:#ef4444;--org:#f59e0b;--yel:#eab308;--txt:#e2e8f0;--muted:#64748b;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px;padding:32px 22px;width:100%;max-width:340px;text-align:center}
+.llogo{font-size:24px;font-weight:800;color:var(--acc);margin-bottom:4px}
+.lsub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.lbox input{width:100%;background:var(--card);border:1px solid var(--brd);color:var(--txt);padding:13px;border-radius:10px;font-size:15px;outline:none;margin-bottom:10px}
+.lbox input:focus{border-color:var(--acc)}
+.btn-login{width:100%;background:var(--acc);color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
+.lerr{color:var(--red);font-size:13px;margin-top:8px;display:none}
+
+/* APP */
+#app{display:none}
+header{background:var(--surf);border-bottom:1px solid var(--brd);padding:12px 14px;position:sticky;top:0;z-index:40}
+.hrow1{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.store-name{font-size:14px;font-weight:800;color:var(--acc)}
+.clock{font-size:13px;font-weight:700;color:var(--txt);background:var(--card);padding:4px 10px;border-radius:8px;border:1px solid var(--brd)}
+.date-nav{display:flex;align-items:center;gap:6px}
+.date-nav button{background:var(--card);border:1px solid var(--brd);color:var(--txt);padding:5px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+.date-nav button:active{opacity:.7}
+.date-label{font-size:13px;font-weight:600;color:var(--txt);min-width:80px;text-align:center}
+.stats{display:flex;gap:6px;margin-top:6px}
+.stat{flex:1;background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:6px 8px;text-align:center}
+.stat-n{font-size:18px;font-weight:800}
+.stat-l{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase}
+.stat-due .stat-n{color:var(--red)}
+.stat-prep .stat-n{color:var(--org)}
+.stat-ready .stat-n{color:var(--grn)}
+
+/* Queue */
+.queue{padding:12px 12px 100px}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px}
+.spinner-wrap{text-align:center;padding:60px}
+.spinner{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Order card */
+.order-card{border-radius:var(--r);border:2px solid var(--brd);background:var(--card);padding:14px;margin-bottom:10px;transition:border-color .3s,background .3s}
+.order-card.due{border-color:var(--red);background:rgba(239,68,68,.06);animation:pulseRed 1.5s ease-in-out infinite}
+.order-card.preparing{border-color:var(--org)}
+.order-card.ready{border-color:var(--grn)}
+@keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 6px rgba(239,68,68,.15)}}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.order-id{font-size:13px;font-weight:800;color:var(--muted)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-due{background:rgba(239,68,68,.2);color:var(--red)}
+.badge-prep{background:rgba(245,158,11,.2);color:var(--org)}
+.badge-ready{background:rgba(34,197,94,.2);color:var(--grn)}
+.badge-conf{background:rgba(79,142,247,.15);color:var(--acc)}
+
+.pickup-time{font-size:22px;font-weight:900;color:var(--txt);margin-bottom:2px}
+.pickup-countdown{font-size:12px;font-weight:700}
+.countdown-due{color:var(--red)}
+.countdown-soon{color:var(--org)}
+.countdown-ok{color:var(--muted)}
+
+.items-list{margin:8px 0;border-top:1px solid var(--brd);padding-top:8px}
+.item-row{display:flex;justify-content:space-between;font-size:13px;padding:2px 0}
+.item-qty{font-weight:700;color:var(--acc);min-width:24px}
+.item-name{flex:1;color:var(--txt)}
+.item-prep{font-size:11px;color:var(--muted)}
+
+.total-row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;border-top:1px solid var(--brd);padding-top:8px;margin-top:4px}
+.pay-badge{font-size:11px;padding:2px 7px;border-radius:6px;font-weight:700}
+.pay-paid{background:rgba(34,197,94,.15);color:var(--grn)}
+.pay-counter{background:rgba(245,158,11,.15);color:var(--org)}
+.pay-zalo{background:rgba(79,142,247,.15);color:var(--acc)}
+
+.note{font-size:12px;color:var(--org);background:rgba(245,158,11,.1);border-radius:7px;padding:5px 9px;margin-top:8px}
+
+/* Action buttons */
+.actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.abtn{flex:1;min-width:90px;padding:10px 6px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer;text-align:center}
+.abtn:active{opacity:.75}
+.abtn-start{background:var(--red);color:#fff}
+.abtn-ready{background:var(--org);color:#fff}
+.abtn-picked{background:var(--grn);color:#fff}
+
+/* FAB refresh */
+.fab{position:fixed;bottom:20px;right:16px;width:50px;height:50px;border-radius:50%;background:var(--acc);border:none;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(79,142,247,.4);z-index:50}
+.fab:active{transform:scale(.92)}
+
+/* Toast */
+#toast-wrap{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:200;width:calc(100% - 24px);max-width:340px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--brd);padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;margin-bottom:8px;animation:tIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.tok{border-color:var(--grn);color:var(--grn)}
+.terr{border-color:var(--red);color:var(--red)}
+@keyframes tIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lbox">
+    <div class="llogo">&#9749; Barista</div>
+    <div class="lsub">ANCHOR COFFEE — Màn hình pha chế</div>
+    <input id="lkey" type="password" placeholder="Nhập key của bạn" autocomplete="off">
+    <button class="btn-login" onclick="doLogin()">Vào ca</button>
+    <div class="lerr" id="lerr">Key không đúng, thử lại</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="hrow1">
+      <div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Chi nhánh</div>
+        <div class="store-name" id="store-name">—</div>
+      </div>
+      <div class="clock" id="clock">00:00:00</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div class="date-nav">
+        <button onclick="changeDate(-1)">&#8249;</button>
+        <div class="date-label" id="date-label">—</div>
+        <button onclick="changeDate(+1)">&#8250;</button>
+      </div>
+      <button onclick="logout()" style="font-size:12px;color:var(--muted);background:var(--card);border:1px solid var(--brd);padding:5px 10px;border-radius:8px;cursor:pointer">Đăng xuất</button>
+    </div>
+    <div class="stats">
+      <div class="stat stat-due"><div class="stat-n" id="s-due">0</div><div class="stat-l">Đến giờ</div></div>
+      <div class="stat stat-prep"><div class="stat-n" id="s-prep">0</div><div class="stat-l">Đang pha</div></div>
+      <div class="stat stat-ready"><div class="stat-n" id="s-ready">0</div><div class="stat-l">Sẵn sàng</div></div>
+    </div>
+  </header>
+
+  <div class="queue" id="queue">
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </div>
+
+  <button class="fab" onclick="loadQueue()" title="Làm mới">&#8635;</button>
+</div>
+
+<div id="toast-wrap"></div>
+
+<script>
+const BASE = location.origin;
+let KEY = '', STORE = null, currentDate = todayStr(), pollTimer = null;
+
+function todayStr() {
+  return new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
+}
+
+/* ---- AUTH ---- */
+async function doLogin() {
+  const k = document.getElementById('lkey').value.trim();
+  if (!k) return;
+  try {
+    const r = await fetch(BASE + '/api/barista/me', { headers: { 'x-api-key': k } });
+    if (!r.ok) { document.getElementById('lerr').style.display = 'block'; return; }
+    const data = await r.json();
+    KEY = k;
+    STORE = data.barista;
+    sessionStorage.setItem('bkey', k);
+    showApp();
+  } catch { document.getElementById('lerr').style.display = 'block'; }
+}
+
+function logout() {
+  sessionStorage.removeItem('bkey');
+  KEY = ''; STORE = null;
+  clearInterval(pollTimer);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('lkey').value = '';
+  document.getElementById('lerr').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('store-name').textContent = STORE.store_name;
+  updateClock();
+  setInterval(updateClock, 1000);
+  setDateLabel();
+  loadQueue();
+  pollTimer = setInterval(loadQueue, 12000); // auto-refresh 12s
+}
+
+/* ---- CLOCK ---- */
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('vi-VN');
+}
+
+/* ---- DATE NAV ---- */
+function changeDate(delta) {
+  const d = new Date(currentDate);
+  d.setDate(d.getDate() + delta);
+  currentDate = d.toLocaleDateString('sv-SE');
+  setDateLabel();
+  loadQueue();
+}
+
+function setDateLabel() {
+  const today = todayStr();
+  const d = new Date(currentDate);
+  const label = currentDate === today ? 'Hôm nay' :
+                currentDate === new Date(new Date().setDate(new Date().getDate()-1)).toLocaleDateString('sv-SE') ? 'Hôm qua' :
+                d.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit' });
+  document.getElementById('date-label').textContent = label;
+}
+
+/* ---- QUEUE ---- */
+async function loadQueue() {
+  try {
+    const r = await fetch(`${BASE}/api/barista/queue?date=${currentDate}`, { headers: { 'x-api-key': KEY } });
+    if (!r.ok) throw new Error('Lỗi ' + r.status);
+    const data = await r.json();
+    renderQueue(data.orders || []);
+  } catch(e) { toast('Lỗi tải hàng đợi: ' + e.message, false); }
+}
+
+const fmtVND = n => Number(n).toLocaleString('vi-VN') + 'đ';
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function renderQueue(orders) {
+  // Stats
+  document.getElementById('s-due').textContent  = orders.filter(o => o.due).length;
+  document.getElementById('s-prep').textContent = orders.filter(o => o.order_status==='preparing').length;
+  document.getElementById('s-ready').textContent= orders.filter(o => o.order_status==='ready').length;
+
+  const el = document.getElementById('queue');
+  if (!orders.length) {
+    el.innerHTML = '<div class="empty">&#127881; Không có đơn nào<br><span style="font-size:13px;color:var(--muted)">Chờ khách đặt hàng…</span></div>';
+    return;
+  }
+
+  el.innerHTML = orders.map(o => {
+    const isDue  = o.due;
+    const isPrep = o.order_status === 'preparing';
+    const isReady= o.order_status === 'ready';
+    const cardCls = isDue ? 'due' : isPrep ? 'preparing' : isReady ? 'ready' : '';
+
+    // Pickup time display
+    let pickupDisplay = '—', countdownHtml = '';
+    if (o.pickup_time) {
+      const pt = new Date(o.pickup_time.replace(' ','T'));
+      pickupDisplay = pt.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
+      const min = o.minutes_until_start;
+      if (isDue) {
+        countdownHtml = '<span class="countdown-due">&#128680; ĐẾN GIỜ PHA NGAY!</span>';
+      } else if (min !== null && min <= 10) {
+        countdownHtml = `<span class="countdown-soon">&#9201; Còn ${min} phút nữa bắt đầu pha</span>`;
+      } else if (min !== null) {
+        countdownHtml = `<span class="countdown-ok">Bắt đầu pha sau ${min} phút</span>`;
+      }
+    } else {
+      countdownHtml = '<span class="countdown-due">&#128680; Làm ngay khi có thể!</span>';
+    }
+
+    // Badge
+    const badgeHtml = isDue
+      ? '<span class="badge badge-due">&#128680; ĐẾN GIỜ PHA</span>'
+      : isPrep ? '<span class="badge badge-prep">&#9749; Đang pha</span>'
+      : isReady ? '<span class="badge badge-ready">&#10003; Sẵn sàng</span>'
+      : '<span class="badge badge-conf">Chờ pha</span>';
+
+    // Items
+    const itemsHtml = o.items.map(it =>
+      `<div class="item-row">
+        <span class="item-qty">x${it.qty}</span>
+        <span class="item-name">${esc(it.name)}</span>
+        <span class="item-prep">${it.prep_minutes||5}'</span>
+       </div>`
+    ).join('');
+
+    // Payment
+    const payLabel = o.payment_method === 'zalopay' ? o.payment_status === 'paid' ? 'ZaloPay ✓' : 'ZaloPay' : 'Thu tại quầy';
+    const payCls   = o.payment_status === 'paid' ? 'pay-paid' : o.payment_method === 'counter' ? 'pay-counter' : 'pay-zalo';
+
+    // Actions
+    let actionsHtml = '';
+    if (o.order_status === 'confirmed') {
+      actionsHtml = `<button class="abtn abtn-start" onclick="updateStatus(${o.id},'preparing')">&#9749; Bắt đầu pha</button>`;
+    } else if (o.order_status === 'preparing') {
+      actionsHtml = `<button class="abtn abtn-ready" onclick="updateStatus(${o.id},'ready')">&#10003; Xong — Báo khách</button>`;
+    } else if (o.order_status === 'ready') {
+      actionsHtml = `<button class="abtn abtn-picked" onclick="updateStatus(${o.id},'picked')">&#128230; Khách đã lấy</button>`;
+    }
+
+    return `<div class="order-card ${cardCls}" id="card-${o.id}">
+      <div class="card-top">
+        <div>
+          <div class="order-id">#${o.id} — ${esc(o.customer_name||'Khách')}</div>
+          ${badgeHtml}
+          <div class="pickup-time">&#128336; ${pickupDisplay}</div>
+          <div class="pickup-countdown">${countdownHtml}</div>
+        </div>
+      </div>
+      <div class="items-list">${itemsHtml}</div>
+      <div class="total-row">
+        <span>${fmtVND(o.total)}</span>
+        <span class="pay-badge ${payCls}">${payLabel}</span>
+      </div>
+      ${o.note ? `<div class="note">&#128203; ${esc(o.note)}</div>` : ''}
+      <div class="actions">${actionsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+async function updateStatus(id, status) {
+  try {
+    const r = await fetch(`${BASE}/api/barista/orders/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': KEY },
+      body: JSON.stringify({ order_status: status })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const labels = { preparing: 'Đang pha ☕', ready: 'Đã báo khách ✓', picked: 'Khách đã lấy 📦' };
+    toast(labels[status] || 'Đã cập nhật');
+    await loadQueue();
+  } catch(e) { toast('Lỗi: ' + e.message, false); }
+}
+
+function toast(msg, ok = true) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + (ok ? 'tok' : 'terr');
+  t.textContent = msg;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ---- INIT ---- */
+const saved = sessionStorage.getItem('bkey');
+if (saved) {
+  document.getElementById('lkey').value = saved;
+  fetch(BASE + '/api/barista/me', { headers: { 'x-api-key': saved } })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => { if (data) { KEY = saved; STORE = data.barista; showApp(); } })
+    .catch(() => {});
+}
+document.getElementById('lkey').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>
