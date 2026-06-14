@@ -18,7 +18,7 @@ seed();
 const app = express();
 
 // CORS — cho phep admin tool HTML va Mini App goi API
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: true }));
 
 // Luu rawBody de verify chu ky webhook Zalo (BAT BUOC dung chuoi goc)
 app.use(
@@ -44,6 +44,9 @@ app.use('/api/barista', baristaApi);
 
 // Webhook Zalo OA (khai bao URL nay trong Zalo Developer > Webhook)
 app.use('/webhook', webhook);
+
+// Live test tool (no CORS — same origin)
+app.use('/test', express.static('public/test'));
 
 // Barista queue app
 app.use('/barista', express.static('public/barista'));

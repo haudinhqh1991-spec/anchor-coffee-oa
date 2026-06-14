@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Anchor Coffee — LIVE TEST</title>
+<style>
+:root{--br:#6f4e37;--cr:#f6f1ec;--cr2:#efe4d6;--bk:#1c160f;--ms:#6b7d52;--ln:#e3d8c8;--dg:#c0492f;--ac:#2563eb;--sh:0 2px 10px rgba(28,22,15,.08)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--cr);color:var(--bk)}
+header{background:var(--br);color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.brand{font-weight:800;font-size:15px}.brand small{font-weight:400;opacity:.8;font-size:12px}
+.live-pill{background:rgba(34,197,94,.25);color:#bbf7d0;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid rgba(34,197,94,.4)}
+.hbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.store-sel select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 8px;border-radius:8px;font-size:12px}
+.store-sel select option{background:#6f4e37}
+.rbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+.wrap{max-width:1200px;margin:0 auto;padding:12px;display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--ln);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.card>h2{margin:0;padding:10px 14px;font-size:14px;background:var(--cr2);border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center}
+.cbody{padding:12px 14px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--ln)}
+.menu-item:last-child{border-bottom:0}
+.mi-info{flex:1}.mi-nm{font-weight:600;font-size:14px}.mi-meta{font-size:11px;color:#8a7c6a}
+.qtybox{display:flex;align-items:center;gap:7px}
+.btn{border:0;border-radius:9px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13px}
+.btn.br{background:var(--br);color:#fff}.btn.ms{background:var(--ms);color:#fff}
+.btn.gh{background:var(--cr2);color:var(--bk)}.btn.dg{background:var(--dg);color:#fff}
+.btn.ac{background:var(--ac);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}.btn:active:not(:disabled){filter:brightness(.88)}
+.rnd{width:28px;height:28px;border-radius:50%;font-size:16px;display:grid;place-items:center;padding:0}
+label{display:block;font-size:12px;color:#7c6e5c;margin:8px 0 3px}
+input[type=text],input[type=datetime-local],.pub{width:100%;padding:8px 10px;border:1px solid var(--ln);border-radius:9px;font-size:14px;background:#fff;color:var(--bk)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.pillrow{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.pill{font-size:12px;border:1px solid var(--ln);background:#fff;border-radius:20px;padding:4px 9px;cursor:pointer}
+.pill.active{background:var(--ms);color:#fff;border-color:var(--ms)}
+.total{display:flex;justify-content:space-between;font-weight:800;margin:8px 0;font-size:15px}
+.empty{color:#9b8d7a;font-size:13px;text-align:center;padding:16px}
+.spin{text-align:center;padding:20px;color:#9b8d7a;font-size:13px}
+/* queue */
+.order{border:1px solid var(--ln);border-radius:12px;padding:11px;margin-bottom:8px;background:#fff}
+.order.due{border-color:var(--dg);background:#fff7f4;animation:pr 1.4s ease-in-out infinite}
+@keyframes pr{0%,100%{box-shadow:0 0 0 3px rgba(192,73,47,.1)}50%{box-shadow:0 0 0 7px rgba(192,73,47,.18)}}
+.order .otop{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.oid{font-weight:800}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.bc{background:#e9eef0;color:#3a4a52}.bp{background:#fff2d6;color:#8a5a00}
+.br2{background:#e3f0d8;color:#3f5a23}.bd{background:var(--dg);color:#fff}
+.oitems{font-size:13px;color:#5a4d3c;margin:4px 0}
+.otiming{font-size:12px;color:#7c6e5c;display:flex;gap:10px;flex-wrap:wrap;margin:4px 0}
+.otiming b{color:var(--bk)}
+.oacts{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap}
+.cdwn{font-weight:700}.cdwn.go{color:var(--dg)}
+/* feed */
+.feed{max-height:180px;overflow:auto}
+.msg{font-size:12.5px;border-left:3px solid var(--ms);padding:5px 9px;margin:5px 0;background:var(--cr);border-radius:0 7px 7px 0}
+.msg .mt{color:#9b8d7a;font-size:11px}
+/* badges */
+.pbpaid{background:#dcfce7;color:#166534;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.pbcnt{background:#fef3c7;color:#92400e;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.stag{font-size:11px;color:#6b7d52;background:#f0f4e8;border-radius:6px;padding:1px 6px;margin-left:3px}
+/* status */
+.sbar{border-radius:8px;padding:8px 12px;font-size:12px;margin-top:7px;display:none}
+.sbar.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.sbar.err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.cat-lbl{font-size:11px;font-weight:700;color:var(--br);text-transform:uppercase;letter-spacing:.5px;padding:7px 0 2px;border-bottom:1px solid var(--ln);margin-bottom:3px}
+.note{font-size:11px;color:#9b8d7a;margin-top:4px}
+.cinfo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.cinfo>*{display:flex;flex-direction:column;gap:2px}
+.cinfo label{margin:0}
+/* toast */
+.toast{position:fixed;left:50%;top:12px;transform:translateX(-50%);background:var(--bk);color:#fff;padding:9px 15px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+.tabs{display:none}
+@media(max-width:860px){.tabs{display:flex;gap:7px;padding:9px 12px 0}.tabs .pill{font-size:13px}.col{display:none}.col.show{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">⚓ ANCHOR COFFEE <small>· LIVE TEST — Từ khách đặt đến barista hoàn thành</small></div>
+  <div class="hbar">
+    <span class="live-pill">🟢 LIVE</span>
+    <div class="store-sel">
+      <select id="store-filter" onchange="reloadQueue()"><option value="">Tất cả chi nhánh</option></select>
+    </div>
+    <button class="rbtn" onclick="reloadQueue()">🔄 Refresh queue</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="pill active" id="tab-c" onclick="showCol('c')">📱 Khách đặt</div>
+  <div class="pill" id="tab-b" onclick="showCol('b')">☕ Barista queue</div>
+</div>
+
+<div class="wrap">
+  <!-- KHÁCH -->
+  <div class="col c show">
+    <div class="card">
+      <h2>📱 Khách đặt trước (mô phỏng Zalo Mini App)</h2>
+      <div class="cbody">
+        <div class="cinfo">
+          <div><label>Tên khách</label><input type="text" id="cname" value="Anh Hậu Test"></div>
+          <div><label>Zalo User ID</label><input type="text" id="czid" value="zalo-test-001"></div>
+        </div>
+        <div id="menu"><div class="spin">⏳ Đang tải menu...</div></div>
+        <label>Điểm lấy</label>
+        <select id="store" class="pub"><option>Đang tải...</option></select>
+        <label>Giờ đến lấy</label>
+        <input type="datetime-local" id="pickup"/>
+        <div class="pillrow">
+          <span class="pill" onclick="spt(15)">+15'</span>
+          <span class="pill" onclick="spt(30)">+30'</span>
+          <span class="pill" onclick="spt(60)">+1h</span>
+        </div>
+        <label>Thanh toán</label>
+        <div class="pillrow" id="pays">
+          <span class="pill active" data-p="counter" onclick="spay('counter')">🏪 Trả tại quầy</span>
+          <span class="pill" data-p="zalopay" onclick="spay('zalopay')">💳 ZaloPay sandbox</span>
+        </div>
+        <div class="total"><span>Tổng</span><span id="total">0đ</span></div>
+        <button class="btn br" style="width:100%" id="obtn" onclick="placeOrder()">☕ Đặt ngay</button>
+        <div class="sbar" id="osbar"></div>
+        <div class="note">Đặt đơn thật lên Railway. Queue bên phải sẽ hiện đơn ngay sau khi đặt.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <h2>🔔 Zalo OA → Khách <span style="font-weight:400;font-size:11px">(mô phỏng)</span></h2>
+      <div class="cbody feed" id="feed"><div class="empty">Chưa có tin nhắn.</div></div>
+    </div>
+  </div>
+
+  <!-- BARISTA -->
+  <div class="col b">
+    <div class="card">
+      <h2>☕ Hàng đợi barista — LIVE <span id="qct" style="font-weight:400;font-size:11px"></span></h2>
+      <div class="cbody">
+        <div class="note" style="margin:0 0 9px">
+          <b>Giờ bắt đầu pha = giờ lấy − (tổng thời gian pha + 2')</b>. Đến giờ → đơn nhấp nháy đỏ. Auto-refresh mỗi 10s.
+        </div>
+        <div id="queue"><div class="spin">⏳ Đang tải queue...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BASE = location.origin; // same-origin, no CORS
+const AKEY = 'anchor-coffee-admin-2024';
+let cart={}, MENU=[], STORES=[], PAY='counter';
+const dueFired = new Set();
+
+const fmt = n => Number(n).toLocaleString('vi-VN')+'đ';
+const hm = d => new Date(d.replace ? d.replace(' ','T') : d).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const hdrs = () => ({'Content-Type':'application/json','x-api-key':AKEY});
+
+/* INIT */
+async function init(){
+  try{
+    const [mr,sr] = await Promise.all([fetch(BASE+'/api/menu'),fetch(BASE+'/api/stores')]);
+    MENU = await mr.json();
+    STORES = await sr.json();
+    renderMenu(); fillStores(); spt(20);
+    reloadQueue();
+    setInterval(reloadQueue,10000);
+  }catch(e){ showQ('<div class="empty" style="color:red">Lỗi kết nối: '+esc(e.message)+'</div>'); }
+}
+
+/* MENU */
+function renderMenu(){
+  const cats=[...new Set(MENU.map(m=>m.category||'Khác'))];
+  document.getElementById('menu').innerHTML = cats.map(cat=>{
+    const items=MENU.filter(m=>(m.category||'Khác')===cat);
+    return `<div class="cat-lbl">${esc(cat)}</div>`+items.map(m=>`
+      <div class="menu-item">
+        <div class="mi-info"><div class="mi-nm">${esc(m.name)}</div><div class="mi-meta">${fmt(m.price)} · ⏱${m.prep_minutes||5}'</div></div>
+        <div class="qtybox">
+          ${cart[m.id]?`<button class="btn gh rnd" onclick="dec(${m.id})">−</button><b>${cart[m.id]}</b>`:''}
+          <button class="btn ms rnd" onclick="inc(${m.id})">+</button>
+        </div>
+      </div>`).join('');
+  }).join('');
+  updTotal();
+}
+function inc(id){cart[id]=(cart[id]||0)+1;renderMenu();}
+function dec(id){cart[id]--;if(cart[id]<=0)delete cart[id];renderMenu();}
+function cartItems(){return Object.entries(cart).map(([id,qty])=>({...MENU.find(x=>x.id==id),qty}));}
+function cartTotal(){return cartItems().reduce((s,it)=>s+it.price*it.qty,0);}
+function updTotal(){
+  document.getElementById('total').textContent=fmt(cartTotal());
+  document.getElementById('obtn').disabled=cartTotal()===0;
+}
+
+/* STORES */
+function fillStores(){
+  document.getElementById('store').innerHTML=STORES.map(s=>`<option value="${s.id}">${esc(s.name)} — ${esc(s.area||'')}</option>`).join('');
+  document.getElementById('store-filter').innerHTML='<option value="">Tất cả chi nhánh</option>'+STORES.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+}
+function spt(min){const d=new Date(Date.now()+min*60000);d.setSeconds(0);document.getElementById('pickup').value=d.toISOString().slice(0,16);}
+function spay(p){PAY=p;document.querySelectorAll('#pays .pill').forEach(x=>x.classList.toggle('active',x.dataset.p===p));}
+
+/* ORDER */
+async function placeOrder(){
+  const items=cartItems(); if(!items.length)return;
+  const store_id=Number(document.getElementById('store').value);
+  const pickupVal=document.getElementById('pickup').value;
+  const pickup_time=pickupVal?pickupVal.replace('T',' '):null;
+  const body={
+    zalo_user_id:document.getElementById('czid').value.trim()||'zalo-test',
+    customer_name:document.getElementById('cname').value.trim()||'Khách test',
+    phone:'0900000000', store_id, pickup_time,
+    items:items.map(it=>({id:it.id,name:it.name,price:it.price,qty:it.qty})),
+    payment_method:PAY, note:''
+  };
+  setSbar('⏳ Đang gửi đơn...','');
+  document.getElementById('obtn').disabled=true;
+  try{
+    const r=await fetch(BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||r.status);
+    const store=STORES.find(s=>s.id===store_id);
+    const pt=pickup_time?` lúc ${pickup_time.slice(11,16)}`:'';
+    setSbar(`✅ Đặt thành công! Đơn <b>#${d.orderId}</b> — ${fmt(cartTotal())} — ${PAY==='counter'?'Trả tại quầy':'ZaloPay sandbox'}`, 'ok');
+    fakeFeed(d.orderId, PAY==='counter'
+      ? `Đã nhận đơn #${d.orderId}. Mời bạn ghé ${store?.name||''}${pt} để lấy & thanh toán ☕`
+      : `✅ ZaloPay thành công ${fmt(cartTotal())}. Đơn #${d.orderId} xác nhận ☕`);
+    toast(`☕ Đơn #${d.orderId} đã đặt!`);
+    cart={};renderMenu();
+    await reloadQueue();
+  }catch(e){
+    setSbar('❌ Lỗi: '+e.message,'err');
+    toast('❌ '+e.message);
+  }finally{document.getElementById('obtn').disabled=cartTotal()===0;}
+}
+function setSbar(msg,cls){const el=document.getElementById('osbar');el.style.display='block';el.className='sbar '+(cls||'');el.innerHTML=msg;}
+
+/* QUEUE */
+async function reloadQueue(){
+  const sid=document.getElementById('store-filter').value;
+  const today=new Date().toLocaleDateString('sv-SE');
+  let url=`${BASE}/api/orders/queue/list?date=${today}`;
+  if(sid) url+=`&store_id=${sid}`;
+  try{
+    const r=await fetch(url,{headers:{'x-api-key':AKEY}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const orders=await r.json();
+    renderQueue(orders);
+  }catch(e){showQ(`<div class="empty" style="color:red">❌ Lỗi queue: ${esc(e.message)}</div>`);}
+}
+function showQ(html){document.getElementById('queue').innerHTML=html;}
+
+function renderQueue(orders){
+  document.getElementById('qct').textContent=orders.length?`(${orders.length} đơn)`:'';
+  if(!orders.length){showQ('<div class="empty">Chưa có đơn nào hôm nay. Hãy đặt thử từ cột trái!</div>');return;}
+  const now=Date.now();
+  showQ(orders.map(o=>{
+    const due=o.due;
+    if(due&&!dueFired.has(o.id)){dueFired.add(o.id);beep();toast(`⏰ Đến giờ pha đơn #${o.id}!`);}
+    const badge=due?'<span class="badge bd">⏰ ĐẾN GIỜ PHA</span>'
+      :o.order_status==='preparing'?'<span class="badge bp">⏳ Đang pha</span>'
+      :o.order_status==='ready'?'<span class="badge br2">✅ Sẵn sàng</span>'
+      :'<span class="badge bc">Chờ tới giờ</span>';
+    const mn=o.minutes_until_start;
+    let cdwn='';
+    if(o.order_status==='confirmed')
+      cdwn=due?'<span class="cdwn go">▶ Pha ngay!</span>':mn!==null?`<span class="cdwn">còn ${mn}' bắt đầu pha</span>`:'';
+    const ptxt=o.pickup_time?hm(o.pickup_time):'sớm nhất';
+    const sptxt=o.start_prep_at?hm(o.start_prep_at):'ngay';
+    const payb=o.payment_status==='paid'?'<span class="pbpaid">Đã trả ✓</span>':'<span class="pbcnt">'+(o.payment_method==='counter'?'Trả quầy':'ZaloPay')+'</span>';
+    const stag=o.store_name?`<span class="stag">📍${esc(o.store_name)}</span>`:'';
+    let acts='';
+    if(o.order_status==='confirmed') acts=`<button class="btn ${due?'dg':'br'}" onclick="upd(${o.id},'preparing')">☕ Bắt đầu pha</button>`;
+    else if(o.order_status==='preparing') acts=`<button class="btn ms" onclick="upd(${o.id},'ready')">✅ Xong — báo khách</button>`;
+    else if(o.order_status==='ready') acts=`<button class="btn ac" onclick="upd(${o.id},'picked')">📦 Khách đã lấy</button>`;
+    return `<div class="order ${due?'due':''}" id="ord-${o.id}">
+      <div class="otop"><div><span class="oid">#${o.id}</span>${stag} <span style="font-size:12px;color:#9b8d7a">${esc(o.customer_name||'Khách')}</span> ${payb}</div>${badge}</div>
+      <div class="oitems">${(o.items||[]).map(i=>`${esc(i.name)} ×${i.qty}`).join(' · ')}</div>
+      <div class="otiming">
+        <span>🛎 Lấy: <b>${ptxt}</b></span>
+        <span>👨‍🍳 Pha lúc: <b>${sptxt}</b></span>
+        <span>⏱ Tổng pha: <b>${o.lead_minutes}'</b></span>
+        ${cdwn}
+      </div>
+      <div class="oacts">${acts}<button class="btn gh" style="font-size:12px" onclick="upd(${o.id},'cancelled')">Huỷ</button></div>
+    </div>`;
+  }).join(''));
+}
+
+async function upd(id,status){
+  try{
+    const r=await fetch(`${BASE}/api/orders/${id}/status`,{method:'PATCH',headers:hdrs(),body:JSON.stringify({order_status:status})});
+    if(!r.ok)throw new Error(await r.text());
+    const lbl={preparing:'Đang pha ☕',ready:'Đã báo khách ✅',picked:'Khách đã lấy 📦',cancelled:'Đã huỷ'};
+    toast(`Đơn #${id}: ${lbl[status]||status}`);
+    const msgs={preparing:`☕ Quán đang pha đơn #${id} của bạn!`,ready:`🔔 Đơn #${id} đã sẵn sàng! Mời ghé lấy.`,picked:`Cảm ơn đã ghé Anchor Coffee! Hẹn gặp lại ☕`,cancelled:`Đơn #${id} đã huỷ.`};
+    if(msgs[status]) fakeFeed(id,msgs[status]);
+    await reloadQueue();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+/* FEED */
+function fakeFeed(id,text){
+  const f=document.getElementById('feed');
+  if(f.querySelector('.empty'))f.innerHTML='';
+  const d=document.createElement('div');d.className='msg';
+  d.innerHTML=`<div class="mt">${new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})} · Zalo OA → Khách (đơn #${id})</div>${esc(text)}`;
+  f.prepend(d);
+}
+
+/* UTILS */
+let tT;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
+let actx;
+function beep(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.value=.06;o.start();o.stop(actx.currentTime+.15);}catch(e){}}
+function showCol(c){['c','b'].forEach(x=>{document.querySelector('.col.'+x).classList.toggle('show',x===c);document.getElementById('tab-'+x).classList.toggle('active',x===c);});}
+
+init();
+</script>
+</body>
+</html>
