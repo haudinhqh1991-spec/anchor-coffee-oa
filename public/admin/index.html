@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Anchor Coffee — Admin</title>
+<style>
+:root{--bg:#0f1117;--surf:#1a1d27;--card:#22263a;--brd:#2e3352;--acc:#4f8ef7;--acc2:#7c5af7;--grn:#22c55e;--red:#ef4444;--org:#f59e0b;--txt:#e2e8f0;--muted:#64748b;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;font-size:15px}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:32px 24px;width:100%;max-width:360px;text-align:center}
+.login-logo{font-size:28px;font-weight:800;color:var(--acc);letter-spacing:1px;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--muted);margin-bottom:28px}
+.login-box input{width:100%;background:var(--card);border:1px solid var(--brd);color:var(--txt);padding:13px 14px;border-radius:9px;font-size:15px;outline:none;margin-bottom:12px}
+.login-box input:focus{border-color:var(--acc)}
+.btn-login{width:100%;background:var(--acc);color:#fff;border:none;padding:13px;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-login:active{opacity:.85}
+.login-err{color:var(--red);font-size:13px;margin-top:10px;display:none}
+#app{display:none}
+header{background:var(--surf);border-bottom:1px solid var(--brd);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font-size:15px;font-weight:800;color:var(--acc);letter-spacing:.5px}
+.logo span{color:var(--txt)}
+.logout{font-size:12px;color:var(--muted);cursor:pointer;padding:5px 10px;background:var(--card);border-radius:7px;border:1px solid var(--brd)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 max(10px,env(safe-area-inset-bottom));cursor:pointer;color:var(--muted);font-size:11px;gap:3px;border:none;background:none}
+.nav-item.active{color:var(--acc)}
+.nav-icon{font-size:20px}
+.page{padding:16px 16px 90px;display:none}
+.page.active{display:block}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-head h2{font-size:16px;font-weight:700}
+.btn-add{background:var(--grn);color:#fff;border:none;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-add:active{opacity:.8}
+.item-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.item-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.item-name{font-size:15px;font-weight:700;line-height:1.3}
+.item-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.item-price{font-size:17px;font-weight:800;color:var(--acc);white-space:nowrap}
+.item-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.btn-sm{padding:6px 13px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer}
+.btn-sm:active{opacity:.75}
+.btn-edit{background:rgba(79,142,247,.15);color:var(--acc)}
+.btn-tog-on{background:rgba(245,158,11,.12);color:var(--org)}
+.btn-tog-off{background:rgba(34,197,94,.12);color:var(--grn)}
+.btn-del{background:rgba(239,68,68,.12);color:var(--red)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;margin-top:4px}
+.badge-on{background:rgba(34,197,94,.15);color:var(--grn)}
+.badge-off{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-cat{background:rgba(124,90,247,.13);color:var(--acc2)}
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.spinner-wrap{text-align:center;padding:48px}
+.spinner{width:28px;height:28px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:flex-end}
+.sheet-backdrop.open{display:flex}
+.sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;padding:0 0 max(20px,env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto}
+.sheet-handle{width:40px;height:4px;background:var(--brd);border-radius:4px;margin:12px auto 0}
+.sheet-head{padding:16px 20px;font-size:16px;font-weight:700;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center}
+.sheet-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:2px 6px}
+.sheet-body{padding:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--card);border:1px solid var(--brd);color:var(--txt);padding:11px 13px;border-radius:9px;font-size:15px;outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--acc)}
+.field textarea{min-height:72px;resize:none}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-save{width:100%;background:var(--acc);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}
+.btn-save:active{opacity:.85}
+#toast-wrap{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:200;width:calc(100% - 32px);max-width:360px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--brd);padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;margin-bottom:8px;animation:tIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast-ok{border-color:var(--grn);color:var(--grn)}
+.toast-err{border-color:var(--red);color:var(--red)}
+@keyframes tIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+select option{background:#1a1d27}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">&#9875; ANCHOR <span style="color:var(--txt)">COFFEE</span></div>
+    <div class="login-sub">Quản lý quán — dành cho chủ quán</div>
+    <input id="login-key" type="password" placeholder="Nhập Admin Key" autocomplete="off">
+    <button class="btn-login" onclick="login()">Đăng nhập</button>
+    <div class="login-err" id="login-err">Sai Admin Key, thử lại</div>
+  </div>
+</div>
+<div id="app">
+  <header>
+    <div class="logo">&#9875; ANCHOR <span>COFFEE</span></div>
+    <span class="logout" onclick="logout()">Đăng xuất</span>
+  </header>
+  <div class="page active" id="page-menu">
+    <div class="section-head"><h2>&#9749; Menu món</h2><button class="btn-add" onclick="openMenuSheet()">+ Thêm</button></div>
+    <div id="menu-list"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+  </div>
+  <div class="page" id="page-stores">
+    <div class="section-head"><h2>&#128205; Cơ sở quán</h2><button class="btn-add" onclick="openStoreSheet()">+ Thêm</button></div>
+    <div id="stores-list"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('menu',this)"><span class="nav-icon">&#9749;</span>Menu</button>
+    <button class="nav-item" onclick="switchPage('stores',this)"><span class="nav-icon">&#128205;</span>Cơ sở</button>
+  </nav>
+</div>
+<div class="sheet-backdrop" id="menu-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><span id="menu-sheet-title">Thêm món mới</span><button class="sheet-close" onclick="closeSheet('menu-sheet')">&#x2715;</button></div>
+    <div class="sheet-body">
+      <input type="hidden" id="m-id">
+      <div class="field"><label>Tên món *</label><input id="m-name" placeholder="Cà phê sữa đá"></div>
+      <div class="field-row">
+        <div class="field"><label>Giá (đồng) *</label><input id="m-price" type="number" inputmode="numeric" placeholder="25000"></div>
+        <div class="field"><label>Danh mục</label><input id="m-cat" placeholder="Cà phê"></div>
+      </div>
+      <div class="field"><label>Mô tả ngắn</label><textarea id="m-desc" placeholder="Mô tả về món..."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Thời gian pha (phút)</label><input id="m-prep" type="number" inputmode="numeric" placeholder="4"></div>
+        <div class="field"><label>Trạng thái</label><select id="m-avail"><option value="1">Đang bán</option><option value="0">Tạm ngưng</option></select></div>
+      </div>
+      <div class="field"><label>Link ảnh (tuỳ chọn)</label><input id="m-img" type="url" placeholder="https://..."></div>
+      <button class="btn-save" onclick="saveMenu()">Lưu món</button>
+    </div>
+  </div>
+</div>
+<div class="sheet-backdrop" id="store-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><span id="store-sheet-title">Thêm cơ sở mới</span><button class="sheet-close" onclick="closeSheet('store-sheet')">&#x2715;</button></div>
+    <div class="sheet-body">
+      <input type="hidden" id="s-id">
+      <div class="field"><label>Tên cơ sở *</label><input id="s-name" placeholder="Anchor Coffee - Nguyễn Huệ"></div>
+      <div class="field"><label>Địa chỉ đầy đủ</label><input id="s-addr" placeholder="12 Nguyễn Huệ, Q1, TP.HCM"></div>
+      <div class="field"><label>Khu vực / Tuyến đường</label><input id="s-area" placeholder="Tuyến Q1 - Trung tâm"></div>
+      <div class="field-row">
+        <div class="field"><label>Giờ mở cửa</label><input id="s-open" type="time" value="06:30"></div>
+        <div class="field"><label>Giờ đóng cửa</label><input id="s-close" type="time" value="22:00"></div>
+      </div>
+      <div class="field"><label>Trạng thái</label><select id="s-active"><option value="1">Đang mở</option><option value="0">Tạm đóng</option></select></div>
+      <button class="btn-save" onclick="saveStore()">Lưu cơ sở</button>
+    </div>
+  </div>
+</div>
+<div id="toast-wrap"></div>
+<script>
+const BASE=location.origin;
+let AK='',menuData=[],storesData=[];
+async function login(){
+  const k=document.getElementById('login-key').value.trim();
+  if(!k)return;
+  try{
+    const r=await fetch(BASE+'/api/orders?store_id=1&date=2099-01-01',{headers:{'x-api-key':k}});
+    if(r.status===403||r.status===401){document.getElementById('login-err').style.display='block';return;}
+    AK=k;sessionStorage.setItem('ak',k);showApp();
+  }catch{document.getElementById('login-err').style.display='block';}
+}
+function logout(){sessionStorage.removeItem('ak');AK='';document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-key').value='';document.getElementById('login-err').style.display='none';}
+function showApp(){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';reload();}
+function hdrs(){return{'Content-Type':'application/json','x-api-key':AK};}
+function switchPage(n,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');el.classList.add('active');}
+async function reload(){await Promise.all([loadMenu(),loadStores()]);}
+async function loadMenu(){document.getElementById('menu-list').innerHTML='<div class="spinner-wrap"><div class="spinner"></div></div>';try{const r=await fetch(BASE+'/api/menu');menuData=await r.json();renderMenu();}catch{document.getElementById('menu-list').innerHTML='<div class="empty">Lỗi tải dữ liệu</div>';}}
+async function loadStores(){document.getElementById('stores-list').innerHTML='<div class="spinner-wrap"><div class="spinner"></div></div>';try{const r=await fetch(BASE+'/api/stores');storesData=await r.json();renderStores();}catch{document.getElementById('stores-list').innerHTML='<div class="empty">Lỗi tải dữ liệu</div>';}}
+const fmt=n=>Number(n).toLocaleString('vi-VN')+'đ';
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function renderMenu(){const el=document.getElementById('menu-list');if(!menuData.length){el.innerHTML='<div class="empty">Chưa có món nào.<br>Nhấn + Thêm để bắt đầu!</div>';return;}el.innerHTML=menuData.map(m=>`<div class="item-card"><div class="item-card-head"><div><div class="item-name">${esc(m.name)}</div><span class="badge badge-cat">${esc(m.category||'—')}</span> <span class="badge ${m.available?'badge-on':'badge-off'}">${m.available?'Đang bán':'Ngưng bán'}</span>${m.description?`<div class="item-meta">${esc(m.description)}</div>`:''}<div class="item-meta">⏱ ${m.prep_minutes||'—'} phút</div></div><div class="item-price">${fmt(m.price)}</div></div><div class="item-actions"><button class="btn-sm btn-edit" onclick="openMenuSheet(${m.id})">✏️ Sửa</button><button class="btn-sm ${m.available?'btn-tog-on':'btn-tog-off'}" onclick="toggleMenu(${m.id},${m.available})">${m.available?'⏸ Ngưng':'▶ Bật'}</button><button class="btn-sm btn-del" onclick="delMenu(${m.id},'${esc(m.name)}')">🗑 Ẩn</button></div></div>`).join('');}
+function renderStores(){const el=document.getElementById('stores-list');if(!storesData.length){el.innerHTML='<div class="empty">Chưa có cơ sở nào.<br>Nhấn + Thêm để bắt đầu!</div>';return;}el.innerHTML=storesData.map(s=>`<div class="item-card"><div class="item-card-head"><div><div class="item-name">${esc(s.name)}</div><span class="badge ${s.active?'badge-on':'badge-off'}">${s.active?'Đang mở':'Tạm đóng'}</span><div class="item-meta">📍 ${esc(s.address||'—')}</div><div class="item-meta">🗺 ${esc(s.area||'—')}</div><div class="item-meta">🕐 ${s.open_time||'?'} – ${s.close_time||'?'}</div></div></div><div class="item-actions"><button class="btn-sm btn-edit" onclick="openStoreSheet(${s.id})">✏️ Sửa</button><button class="btn-sm ${s.active?'btn-tog-on':'btn-tog-off'}" onclick="toggleStore(${s.id},${s.active})">${s.active?'⏸ Đóng':'▶ Mở lại'}</button></div></div>`).join('');}
+function openMenuSheet(id){const m=id?menuData.find(x=>x.id===id):null;document.getElementById('menu-sheet-title').textContent=m?'Sửa món':'Thêm món mới';document.getElementById('m-id').value=m?.id||'';document.getElementById('m-name').value=m?.name||'';document.getElementById('m-price').value=m?.price||'';document.getElementById('m-cat').value=m?.category||'';document.getElementById('m-desc').value=m?.description||'';document.getElementById('m-prep').value=m?.prep_minutes||4;document.getElementById('m-avail').value=m!=null?(m?.available??1):1;document.getElementById('m-img').value=m?.image_url||'';openSheet('menu-sheet');}
+async function saveMenu(){const id=document.getElementById('m-id').value;const body={name:document.getElementById('m-name').value.trim(),price:Number(document.getElementById('m-price').value),category:document.getElementById('m-cat').value.trim(),description:document.getElementById('m-desc').value.trim(),prep_minutes:Number(document.getElementById('m-prep').value)||4,available:Number(document.getElementById('m-avail').value),image_url:document.getElementById('m-img').value.trim()};if(!body.name||!body.price){toast('Vui lòng nhập tên và giá món',false);return;}try{const r=await fetch(`${BASE}/api/menu${id?'/'+id:''}`,{method:id?'PUT':'POST',headers:hdrs(),body:JSON.stringify(body)});if(!r.ok)throw new Error(await r.text());toast(id?'Đã cập nhật món!':'Đã thêm món mới!');closeSheet('menu-sheet');loadMenu();}catch(e){toast('Lỗi: '+e.message,false);}}
+async function toggleMenu(id,cur){await fetch(`${BASE}/api/menu/${id}`,{method:'PUT',headers:hdrs(),body:JSON.stringify({available:cur?0:1})});toast(cur?'Đã tạm ngưng bán':'Đã bật bán lại');loadMenu();}
+async function delMenu(id,name){if(!confirm('Ẩn "'+name+'" khỏi menu?\n(Có thể bật lại sau)'))return;await fetch(`${BASE}/api/menu/${id}`,{method:'DELETE',headers:hdrs()});toast('Đã ẩn khỏi menu');loadMenu();}
+function openStoreSheet(id){const s=id?storesData.find(x=>x.id===id):null;document.getElementById('store-sheet-title').textContent=s?'Sửa cơ sở':'Thêm cơ sở mới';document.getElementById('s-id').value=s?.id||'';document.getElementById('s-name').value=s?.name||'';document.getElementById('s-addr').value=s?.address||'';document.getElementById('s-area').value=s?.area||'';document.getElementById('s-open').value=s?.open_time||'06:30';document.getElementById('s-close').value=s?.close_time||'22:00';document.getElementById('s-active').value=s!=null?(s?.active??1):1;openSheet('store-sheet');}
+async function saveStore(){const id=document.getElementById('s-id').value;const body={name:document.getElementById('s-name').value.trim(),address:document.getElementById('s-addr').value.trim(),area:document.getElementById('s-area').value.trim(),open_time:document.getElementById('s-open').value,close_time:document.getElementById('s-close').value,active:Number(document.getElementById('s-active').value)};if(!body.name){toast('Vui lòng nhập tên cơ sở',false);return;}try{const r=await fetch(`${BASE}/api/stores${id?'/'+id:''}`,{method:id?'PUT':'POST',headers:hdrs(),body:JSON.stringify(body)});if(!r.ok)throw new Error(await r.text());toast(id?'Đã cập nhật cơ sở!':'Đã thêm cơ sở mới!');closeSheet('store-sheet');loadStores();}catch(e){toast('Lỗi: '+e.message,false);}}
+async function toggleStore(id,cur){await fetch(`${BASE}/api/stores/${id}`,{method:'PUT',headers:hdrs(),body:JSON.stringify({active:cur?0:1})});toast(cur?'Đã đóng cơ sở':'Đã mở lại cơ sở');loadStores();}
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.sheet-backdrop').forEach(b=>{b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');});});
+function toast(msg,ok=true){const t=document.createElement('div');t.className='toast '+(ok?'toast-ok':'toast-err');t.textContent=msg;document.getElementById('toast-wrap').appendChild(t);setTimeout(()=>t.remove(),3000);}
+const saved=sessionStorage.getItem('ak');
+if(saved){AK=saved;showApp();}
+document.getElementById('login-key').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+</script>
+</body>
+</html>

@@ -27,6 +27,9 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 
+// Admin panel (mobile-friendly, password-protected)
+app.use('/admin', express.static('public/admin'));
+
 // Health check
 app.get('/', (_req, res) => res.send('Cafe Zalo OA backend OK'));
 
