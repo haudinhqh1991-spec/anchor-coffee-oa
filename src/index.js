@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import cron from 'node-cron';
 import { config } from './config.js';
 import { seed } from './db.js';
@@ -14,6 +15,9 @@ import webhook from './zalo/webhook.js';
 seed();
 
 const app = express();
+
+// CORS — cho phep admin tool HTML va Mini App goi API
+app.use(cors({ origin: "*" }));
 
 // Luu rawBody de verify chu ky webhook Zalo (BAT BUOC dung chuoi goc)
 app.use(
