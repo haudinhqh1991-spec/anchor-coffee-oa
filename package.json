@@ -1,0 +1,19 @@
+{
+  "name": "cafe-zalo-oa-backend",
+  "version": "1.0.0",
+  "description": "Backend tu dong dat hang ca phe qua Zalo OA + ZaloPay",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/db.js --seed"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "node-thermal-printer": "^4.4.4"
+  }
+}
